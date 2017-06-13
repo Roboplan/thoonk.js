@@ -75,6 +75,7 @@ function Job(thoonk, name, config) {
     Feed.call(this, thoonk, name, config, 'job');
     this.bredis = redis.createClient(this.thoonk.port, this.thoonk.host);
     if (this.thoonk.password) {
+        console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" + password);
         this.bredis.auth(this.thoonk.password, function (err) {
             if (err) { throw err; }
         });
