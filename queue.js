@@ -4,8 +4,8 @@
  */
 
 var Feed = require("./feed.js").Feed,
+    redis = require("redis"),
     uuid = require("node-uuid");
-
 /**
  * A Thoonk queue is a typical FIFO structure, but with an
  * optional priority override for inserting to the head
@@ -32,6 +32,11 @@ var Feed = require("./feed.js").Feed,
 function Queue(thoonk, name, config) {
     Feed.call(this, thoonk, name, config, 'queue');
     this.bredis = redis.createClient(this.thoonk.port, this.thoonk.host);
+    if (this.thoonk.password) {
+        this.bredis.auth(this.thoonk.password, function (err) {
+            if (err) { throw err; }
+        });
+    }
     this.bredis.select(this.thoonk.db);
     this.publish = this.thoonk.lock.require(queuePublish, this);
     this.put = this.thoonk.lock.require(queuePublish, this);

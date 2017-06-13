@@ -28,18 +28,24 @@ var Thoonk = exports.Thoonk = function Thoonk(host, port, db, password) {
     this.host = host;
     this.port = port;
     this.db = db;
+    password || (password = "");
+
+    this.password = password;
+
     EventEmitter.call(this);
     this.lredis = redis.createClient(port, host);
-    console.log("????????????????????????????????????? " + password);
     if (password) {
-        console.log("?????????????????????????????????????!!!! " + password);
-        this.lredis.auth(password);
+        this.lredis.auth(password, function (err) {
+            if (err) { throw err; }
+        });
     }
     this.lredis.select(db);
     this.lredis.subscribe("newfeed", "delfeed", "conffeed");
     this.mredis = redis.createClient(port, host);
     if (password) {
-        this.mredis.auth(password);
+        this.mredis.auth(password, function (err) {
+            if (err) { throw err; }
+        });
     }
     this.mredis.select(db);
     this.lock = new padlock.Padlock();
@@ -430,4 +436,4 @@ exports.createClient = function(host, port, db, password) {
     return new Thoonk(host, port, db, password);
 }
 
-exports.VERSION = '0.5.1';
+exports.VERSION = '0.5.2';
